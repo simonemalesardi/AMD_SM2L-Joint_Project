@@ -4,19 +4,18 @@ Gli step effettuati sono:
     questo viene fatto nel branch analysis
 - pre-processing del dataset: 
     * pulizia e rimozione dati inutili
-    * divisione del dataset in train e test
-    * feature selection sul train set
+    * divisione del dataset in train e test 
+    * computazione delle features per ogni set (train e test)
+    * applicazione di graphframes e computazione features
+- feature selection: 
+    ?????????????????????
         * prevent learning from noise (overfitting)
         * improve accuracy
         * reduce training time
-
-        la feature selection è supervised, 3 metodi: 
-        - intrinsic (embedded method)
-        - wrapper method
-        - filter method
-
-        provare ad usare una matrice di correlazione: tabella che mostra le correlazioni lineari tra coppie di variabili
-
+    ?????????????????????
+    * matrice di correlazione: tabella che mostra le correlazioni lineari tra coppie di variabili
+    * lasso regression:
+        * riduzione dimensionalità dataframe
 
 
 
@@ -38,82 +37,98 @@ Soluzioni:
 
 
 TRASFORMAZIONE features
-Inizialmente il dataset ha le seguenti features: 
-* 'id'
-* 'timestamp'
-* 'from_bank'
-* 'from_account'
-* 'to_bank'
-* 'to_account'
-* 'amount_received' 
-* 'receiving_currency' 
-* 'amount_paid'
-* 'payment_currency' 
-* 'payment_format'
-* 'is_laundering'
+- Inizialmente il dataset ha le seguenti features: 
+    * 'id'
+    * 'timestamp'
+    * 'from_bank'
+    * 'from_account'
+    * 'to_bank'
+    * 'to_account'
+    * 'amount_received' 
+    * 'receiving_currency' 
+    * 'amount_paid'
+    * 'payment_currency' 
+    * 'payment_format'
+    * 'is_laundering'
 
-    small_with_ids.parquet
+        small_with_ids.parquet
 
-Poi lo trasformo ed aggiungo: 
-* 'same_account'
-* 'same_bank'
-* 'amount_difference',
-* 'same_amounts',
-* 'payment_currency'    --> convertito con StringIndexer
-* 'payment_format'      --> convertito con StringIndexer
-* 'same_currency',
-* 'payment_format',     --> convertito con StringIndexer
-* 'is_laundering'
+- Poi lo trasformo ed aggiungo: 
+    * 'same_account'
+    * 'same_bank'
+    * 'amount_difference',
+    * 'same_amounts',
+    * 'payment_currency'    --> convertito con StringIndexer
+    * 'payment_format'      --> convertito con StringIndexer
+    * 'same_currency',
+    * 'payment_format',     --> convertito con StringIndexer
+    * 'is_laundering'
 
-    small_features.parquet
+        small_features.parquet
 
-partendo dal dataset sopra, divido in train e test. 
-i due dataframe vengono joinati x left con il datafrmae iniziale small_with_ids.parquet al fine di ottenere le feat iniziali
-e vengono salvati due parquet: 
+- Partendo dal dataset sopra, divido in train e test. 
+    I due dataframe vengono joinati x left con il datafrmae iniziale small_with_ids.parquet al fine di ottenere le feat iniziali
+    e vengono salvati due parquet: 
 
-    train_orig_features.parquet
-    test_orig_features.parquet
+        train_orig_features.parquet
+        test_orig_features.parquet
 
-Successivamente per ognuno dei due set computo le varie features e salvo due parquet con le features: 
-* 'id',
-* 'from_account',
-* 'to_account',
-* 'week',
-* 'day_of_month',
-* 'hour',
-* 'timestamp',
-* 'same_account',
-* 'same_bank',
-* 'amount_received',
-* 'amount_paid',
-* 'amount_difference',
-* 'same_amounts',
-* 'receiving_currency',
-* 'payment_currency'    
-* 'same_currency',
-* 'payment_format',
-* 'day_of_week',
-* 'transactions_same_hour_fa',
-* 'transactions_same_day_fa',
-* 'transactions_same_week_fa',
-* 'transactions_same_hour_fata',
-* 'transactions_same_day_fata',
-* 'transactions_same_week_fata'
-* 'is_laundering',
+- Successivamente per ognuno dei due set computo le varie features e salvo due parquet con le features: 
+    * 'id',
+    * 'from_account',
+    * 'to_account',
+    * 'week',
+    * 'day_of_month',
+    * 'hour',
+    * 'timestamp',
+    * 'same_account',
+    * 'same_bank',
+    * 'amount_received',
+    * 'amount_paid',
+    * 'amount_difference',
+    * 'same_amounts',
+    * 'receiving_currency',
+    * 'payment_currency'    
+    * 'same_currency',
+    * 'payment_format',
+    * 'day_of_week',
+    * 'transactions_same_hour_fa',
+    * 'transactions_same_day_fa',
+    * 'transactions_same_week_fa',
+    * 'transactions_same_hour_fata',
+    * 'transactions_same_day_fata',
+    * 'transactions_same_week_fata'
+    * 'is_laundering',
 
-    train_set_noGF.parquet
-    test_set_noGF.parquet
+        train_set_noGF.parquet
+        test_set_noGF.parquet
 
-A graphframes vengono passate le feature iniziali ({}_orig_features): 
-poi ottengo un df che combina le features calcolate su {}_orig_features con {}_set_noGF ed ottengo due parquet: 
+- A graphframes vengono passate le feature iniziali ({}_orig_features): 
+    poi ottengo un df che combina le features calcolate su {}_orig_features con {}_set_noGF ed ottengo due parquet: 
 
-    train_set_withGF.parquet
-    test_set_withGF.parquet
+        train_set_withGF.parquet
+        test_set_withGF.parquet
 
-
-Applicando lasso regression ottengo due dataset di dimensionalità ridotta: 
+- Applicando lasso regression ottengo due dataset di dimensionalità ridotta: 
 
     reduced_train_C.{}.parquet 
     reduced_test_C.{}.parquet
     
     # dove {} è il tipo di parametro C considerato
+
+COSTRUZIONE DECISION TREE
+
+COSTRUZIONE RANDOM FOREST
+
+TUNING degli iperparametri
+deve essere fatto sul validation set
+per il tuning ho utilizzanto gridsearchcv, ma per fare il tuning servono due metodi: 
+- get_params
+- set_params
+
+https://scikit-learn.org/stable/developers/develop.html
+
+
+
+parametri decisoin tree
+https://towardsdatascience.com/how-to-tune-a-decision-tree-f03721801680
