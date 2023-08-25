@@ -116,15 +116,20 @@ TRASFORMAZIONE features
     
     # dove {} è il tipo di parametro C considerato
 
-COSTRUZIONE DECISION TREE
+    rimuovo poi feature inutili come id, amount_paid, amount_received 
 
-COSTRUZIONE RANDOM FOREST
+COSTRUZIONE DECISION TREE
 
 TUNING degli iperparametri
 deve essere fatto sul validation set
-per il tuning ho utilizzanto gridsearchcv, ma per fare il tuning servono due metodi: 
+per il tuning ho pensato di utilizzare gridsearchcv, ma per fare il tuning servono due metodi: 
 - get_params
 - set_params
+il problema di gridsearchcv è che richiede veramente tante risorse e tempo, quindi esiste un metodo alternativo che utilizza una logica simile a gridsearchcv, ma che.... (differenze) e si chiama HalvingGridSearchCV
+
+
+COSTRUZIONE RANDOM FOREST
+
 
 https://scikit-learn.org/stable/developers/develop.html
 
@@ -132,3 +137,6 @@ https://scikit-learn.org/stable/developers/develop.html
 
 parametri decisoin tree
 https://towardsdatascience.com/how-to-tune-a-decision-tree-f03721801680
+
+
+ricordarsi di modificare max function di pyspark, dato che in features_computing lo uso per conto di spark, mentre in decision_tree lo uso per trovare il max tra due numeri, quindi non per conto di pyspark. STESSO ragionamento per min
